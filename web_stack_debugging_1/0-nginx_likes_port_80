@@ -1,20 +1,39 @@
 #!/usr/bin/env bash
-# A Bash script that configures a server to the above requirements
-
-#!/bin/bash
-
-# Start a new Ubuntu container
-docker run --name my-ubuntu -it ubuntu bash
-
-# Update the package manager
-apt-get update
 
 # Install Nginx
-apt-get install nginx
+apt-get update
+apt-get install -y nginx
 
-# Edit the nginx.conf file to listen on port 80
-nano /etc/nginx/nginx.conf
-sed -i 's/listen\s\+80;/listen 80 default_server;/g' /etc/nginx/nginx.conf
+# Stop Nginx service if already running
+systemctl stop nginx
 
-# Restart the Nginx service
+# Remove default Nginx configuration
+rm /etc/nginx/sites-enabled/default
+
+# Create new Nginx configuration file to listen on port 80
+cat > /etc/nginx/sites-enabled/my-nginx.conf <<EOF
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+    server_name _;
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOF
+
+# Create a simple HTML file in the Nginx web root directory
+echo "Hello, world!" > /var/www/html/index.html
+
+# Restart Nginx service
 systemctl restart nginx
+
+# Test if Nginx is listening on port 80 and serving web pages correctly
+if curl -sS http://localhost | grep -q "Hello, world!"; then
+    echo "Nginx is now listening on port 80 and serving web pages correctly"
+else
+    echo "Error: Nginx is not listening on port 80 or serving web pages correctly"
+fi
+# A Bash script that configures a server to the above requirements
