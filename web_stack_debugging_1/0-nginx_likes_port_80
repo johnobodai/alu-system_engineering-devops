@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-Bash script that configures a server to the above requirements
+# Bash script that configures a server to the above requirements
 
 # Install Nginx
 apt-get update
