@@ -1,1 +1,20 @@
 #!/usr/bin/env bash
+# A Bash script that configures a server to the above requirements
+
+#!/bin/bash
+
+# Start a new Ubuntu container
+docker run --name my-ubuntu -it ubuntu bash
+
+# Update the package manager
+apt-get update
+
+# Install Nginx
+apt-get install nginx
+
+# Edit the nginx.conf file to listen on port 80
+nano /etc/nginx/nginx.conf
+sed -i 's/listen\s\+80;/listen 80 default_server;/g' /etc/nginx/nginx.conf
+
+# Restart the Nginx service
+systemctl restart nginx
