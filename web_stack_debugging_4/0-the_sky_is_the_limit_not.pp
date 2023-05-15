@@ -1,15 +1,14 @@
-#!/bin/bash
+# increase ULIMTI
 
-# Step 1: Check Nginx error logs
-sudo tail -f /var/log/nginx/error.log &
+# declare nginx service and make sure it is running
+service { 'nginx':
+  ensure => running,
+}
 
-# Step 2: Check server logs
-sudo tail -f /var/log/syslog &
-
-# Step 3: Identify and fix root cause of issue
-
-# Step 4: Verify issue is resolved
-ab -n 2000 -c 100 http://localhost/ # Change URL as per your requirement
-
-# Step 5: Monitor logs and server performance regularly
-
+exec { 'increase ULIMIT':
+  # replace with new ULIMIT value
+  command  => 'sed -i "s/ULIMIT=\"-n 15\"/ULIMIT=\"-n 4000\"/g" /etc/default/nginx',
+  provider => 'shell',
+  # tells nginx to restart
+  notify   => Service['nginx']
+}
